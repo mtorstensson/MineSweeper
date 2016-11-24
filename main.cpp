@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
 
     int size_x, size_y;
     GameBoard board(10,10,10,&size_x,&size_y);
-    int x,y,i=0;
-    int gameOn=1;
+    //int x,y,i=0;
+    //int gameOn=1;
     QGraphicsView view(&board);
     view.setRenderHint(QPainter::Antialiasing);
     view.setBackgroundBrush(Qt::gray);

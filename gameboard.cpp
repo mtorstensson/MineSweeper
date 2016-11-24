@@ -24,6 +24,11 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
     empty = x_max*y_max - mines;
     if(empty <= 0)
         return;
+    //    Counter(int initial_amount=0, int n_number=2,int x=0, int y=0, bool use_sign =true);
+        timeCounter = new Counter(0, 3, 0, 0,false);
+        addItem(timeCounter);
+        mineCounter = new Counter(mines, 2, 200,0,true);
+        addItem(mineCounter);
     for(x=0; x<x_max; x++)
     {
         for(y=0; y<y_max; y++)
@@ -31,13 +36,12 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
             spaces[x_max*y+x] = new Space(IMG_X*x,IMG_Y*y+100);
             connect(spaces[x_max*y+x],SIGNAL(kaboom()),this,SLOT(hit_mine()));
             connect(spaces[x_max*y+x],SIGNAL(clicked(Space*)),this,SLOT(move_made(Space*)));
+            connect(spaces[x_max*y+x],SIGNAL(expanded()),this,SLOT(checkDone()));
+            connect(spaces[x_max*y+x],SIGNAL(flagged(bool)),mineCounter,SLOT(change(bool)));
             connect(this,SIGNAL(kaboom()),spaces[x_max*y+x],SLOT(explode()));
             addItem(spaces[x_max*y+x]);
         }
     }
-//    Counter(int initial_amount=0, int n_number=2,int x=0, int y=0, bool use_sign =true);
-//    timeCounter = new Counter(0, 3, 0, 0,false);
-//    mineCounter = new Counter(mines, 2, 500,0,true);
 }
 
 void GameBoard::setup(Space *first)
@@ -119,7 +123,6 @@ void GameBoard::setup(Space *first)
 
 GameBoard::~GameBoard()
 {
-    char tmp[] = "Game over!\n\n\n";
 //	if(spaces)
 //		delete [] spaces;
 }
@@ -158,6 +161,13 @@ void GameBoard::move_made(Space *clicked)
     }
     else
         moves_made++;
+}
+
+void GameBoard::checkDone()
+{
+    if(emptyLeft())
+        return;
+
 }
 
 /*

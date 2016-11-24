@@ -47,9 +47,15 @@ void Space::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Space::mark()
 {
     if(state==-1)
+    {
         state = -2;
+        emit flagged(false);
+    }
     else if(state == -2)
+    {
         state = -1;
+        emit flagged(true);
+    }
     update();
 }
 
@@ -67,7 +73,7 @@ void Space::is_mine(bool is_it)
 void Space::expand()
 {
     // Expandera,
-    if(is_expanded)
+    if(is_expanded || state == -2)
         return;
     state = number;
     //	redraw();
@@ -75,8 +81,8 @@ void Space::expand()
     if(number == 0)
         for(int i=0; i < 8; i++)
             neibours[i]->expand();
-
     update();
+    emit expanded();
 }
 
 void Space::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)

@@ -15,6 +15,7 @@
 class Space : public QObject, public QGraphicsItem
 {
     Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 public:
     Space(int x, int y);
 
@@ -36,6 +37,8 @@ public slots:
 signals:
     void kaboom();
     void clicked(Space* origin);
+    void flagged(bool unflag);
+    void expanded();
     
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;

@@ -1,13 +1,22 @@
 #include "counter.h"
 
 Counter::Counter(int initial_amount, int n_number, int x, int y, bool use_sign)
-    :digits(n_number), sign(use_sign), amount(initial_amount)
+    :amount(initial_amount), digits(n_number), sign(use_sign)
 {
     max_amount =1;
     for(int i=0; i<digits;i++)
         max_amount *= 10;
     setPos(x,y);
-    //setPlainText(QString::number(amount));
+    font = new QFont("Purisa");
+    font->setPixelSize(40);
+    setFont(*font);
+    if(amount < 0)
+        setDefaultTextColor(Qt::red);
+    else
+        setDefaultTextColor(Qt::green);
+
+    setPlainText(QString::number(amount));
+    ensureVisible();
 }
 
 void Counter::increase(int n)
@@ -18,6 +27,7 @@ void Counter::increase(int n)
         amount = max_amount;
         emit(maxed());
     }
+    changed();
 }
 
 void Counter::decrease(int n)
@@ -33,11 +43,32 @@ void Counter::decrease(int n)
         amount = 0;
         emit(minimized());
     }
+    changed();
 }
 
 void Counter::set(int n)
 {
     amount = n;
+    changed();
+}
+
+void Counter::change(bool add)
+{
+    if(add)
+        increase();
+    else
+        decrease();
+    changed();
+}
+
+void Counter::changed()
+{
+    if(amount < 0)
+        setDefaultTextColor(Qt::red);
+    else
+        setDefaultTextColor(Qt::green);
+    setPlainText(QString::number(amount));
+    update();
 }
 
 

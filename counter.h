@@ -3,8 +3,9 @@
 
 #include <QGraphicsItem>
 #include <QObject>
+#include <QFont>
 
-class Counter : public QObject, public QGraphicsItem
+class Counter : public QGraphicsTextItem
 {
     Q_OBJECT
 public:
@@ -18,12 +19,15 @@ public slots:
     void increase(int n=1);
     void decrease(int n=1);
     void set(int n);
+    void change(bool add);
 
 private:
+    void changed();
     int amount;
     int max_amount;
     int digits;
     bool sign;
+    QFont* font;
 };
 
 #endif // COUNTER_H

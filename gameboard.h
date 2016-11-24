@@ -17,8 +17,6 @@ public:
     GameBoard(int x=10, int y=10, int n_mines=10);
     GameBoard(int x, int y, int n_mines, int *size_x, int *size_y);
     ~GameBoard();
-    //int click(int x, int y);
-    //void redraw();
     void start(int x, int y, int n_mines);
     bool emptyLeft();
 
@@ -28,6 +26,7 @@ protected:
 public slots:
     void hit_mine();
     void move_made(Space* clicked);
+    void checkDone();
 
 signals:
     void kaboom();
