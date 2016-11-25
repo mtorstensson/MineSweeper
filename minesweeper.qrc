@@ -13,5 +13,8 @@
         <file>images/u.png</file>
         <file>images/m.png</file>
         <file>images/c.png</file>
+        <file>images/play.png</file>
+        <file>images/stop.png</file>
+        <file>images/victory.png</file>
     </qresource>
 </RCC>

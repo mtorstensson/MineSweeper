@@ -2,13 +2,9 @@
 #define SPACE_H
 
 #include <QGraphicsItem>
-#include <QGraphicsScene>
 #include <QPainter>
-#include <QStyleOption>
 #include <QGraphicsSceneMouseEvent>
 #include <QObject>
-
-#include <math.h>
 
 
 //! [0]
@@ -22,6 +18,7 @@ public:
     void mark(); //Om den markeras som mina
     bool is_mine();
     void is_mine(bool is_it);
+    bool is_flag();
     void expand();
     //void redraw();
     void setup(Space* nb[]);
@@ -31,7 +28,7 @@ public:
                QWidget *widget) Q_DECL_OVERRIDE;
 
 public slots:
-    void explode();
+    void explode(bool victory);
     void reset();
 
 signals:

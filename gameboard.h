@@ -2,12 +2,11 @@
 #define GAMEBOARD_H
 
 #include <QGraphicsScene>
-#include <iostream>
-#include <stdlib.h>
-#include <time.h>
+#include <QTimer>
 
 #include "space.h"
 #include "counter.h"
+#include "icon.h"
 
 class GameBoard : public QGraphicsScene
 {
@@ -27,9 +26,10 @@ public slots:
     void hit_mine();
     void move_made(Space* clicked);
     void checkDone();
+    void reset();
 
 signals:
-    void kaboom();
+    void gameEnd(bool);
     void restart();
 
 private:
@@ -39,8 +39,9 @@ private:
     Space* dummy;
     Counter* timeCounter;
     Counter* mineCounter;
+    Icon* statusIndicator;
     int x_max, y_max,mines,empty;
-    bool state, first;
+    bool first;
     int moves_made;
     QTimer* timer;
 

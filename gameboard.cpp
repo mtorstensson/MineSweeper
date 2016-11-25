@@ -10,13 +10,13 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
   :x_max(x), y_max(y), mines(n_mines)
 {
     srand(time(NULL));
-    state = true;
+    first = true;
     setSceneRect(0, 0, IMG_X*x_max, IMG_Y*y_max+100);
     *size_x = IMG_X*x_max;
     *size_y = IMG_Y*y_max+100;
-    first = true;
+    timer = new QTimer();
 
-    //TODO: Är NoIndex rätt i detta läget?
+    //TODO: Is NoIndex the right index method for this?
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
 
@@ -24,11 +24,16 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
     empty = x_max*y_max - mines;
     if(empty <= 0)
         return;
+    statusIndicator = new Icon(100, 0);
+    addItem(statusIndicator);
+    connect(this,SIGNAL(gameEnd(bool)),statusIndicator,SLOT(gameEnd(bool)));
+    connect(this,SIGNAL(restart()),statusIndicator,SLOT(reset()));
+    connect(statusIndicator,SIGNAL(clicked()),this,SLOT(reset()));
     //    Counter(int initial_amount=0, int n_number=2,int x=0, int y=0, bool use_sign =true);
-        timeCounter = new Counter(0, 3, 0, 0,false);
-        addItem(timeCounter);
-        mineCounter = new Counter(mines, 2, 200,0,true);
-        addItem(mineCounter);
+    timeCounter = new Counter(0, 3, 0, 0,false);
+    addItem(timeCounter);
+    mineCounter = new Counter(mines, 2, 200,0,true);
+    addItem(mineCounter);
     for(x=0; x<x_max; x++)
     {
         for(y=0; y<y_max; y++)
@@ -38,7 +43,8 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
             connect(spaces[x_max*y+x],SIGNAL(clicked(Space*)),this,SLOT(move_made(Space*)));
             connect(spaces[x_max*y+x],SIGNAL(expanded()),this,SLOT(checkDone()));
             connect(spaces[x_max*y+x],SIGNAL(flagged(bool)),mineCounter,SLOT(change(bool)));
-            connect(this,SIGNAL(kaboom()),spaces[x_max*y+x],SLOT(explode()));
+            connect(this,SIGNAL(gameEnd(bool)),spaces[x_max*y+x],SLOT(explode(bool)));
+            connect(statusIndicator,SIGNAL(clicked()),spaces[x_max*y+x],SLOT(reset()));
             addItem(spaces[x_max*y+x]);
         }
     }
@@ -123,8 +129,7 @@ void GameBoard::setup(Space *first)
 
 GameBoard::~GameBoard()
 {
-//	if(spaces)
-//		delete [] spaces;
+
 }
 
 bool GameBoard::emptyLeft()
@@ -143,19 +148,20 @@ bool GameBoard::emptyLeft()
 
 void GameBoard::hit_mine()
 {
-    emit kaboom();
+    emit gameEnd(false);// Game did not end in victory
+    timer->stop();
 }
 
 void GameBoard::move_made(Space *clicked)
 {
     if(first)
     {
-        // Placera ut minor
+        // Place mines
         setup(clicked);
-        // Starta timer
-//        connect(timer,SIGNAL(timeout()),timeCounter,SLOT(increase()));
-//        timer->start(1000); // Timer räknar sekunder
-        //Nolla moves
+        // Start timer
+        connect(timer,SIGNAL(timeout()),timeCounter,SLOT(increase()));
+        timer->start(1000); // Timer counts seconds
+        //Reset moves counter
         moves_made = 1;
         first = false;
     }
@@ -167,66 +173,20 @@ void GameBoard::checkDone()
 {
     if(emptyLeft())
         return;
+    timer->stop();
+    emit gameEnd(true); // Game ended in victory!
+    mineCounter->set(moves_made);
 
 }
 
-/*
-Space* GameBoard::nb(int x, int y)
+void GameBoard::reset()
 {
-    Space *nb[8];
-    if(y == 0)
-    {
-        nb[0] = dummy;
-        nb[1] = dummy;
-        nb[2] = spaces[(y  )*x_max+x+1];
-        nb[3] = spaces[(y+1)*x_max+x+1];
-        nb[4] = spaces[(y+1)*x_max+x  ];
-        nb[5] = spaces[(y+1)*x_max+x-1];
-        if(x == 0)
-            nb[6] = dummy;
-        else
-            nb[6] = spaces[(y  )*x_max+x-1];
-        nb[7] = dummy;
+    emit restart();
+    timer->stop();
+    mineCounter->set(mines);
+    timeCounter->set(0);
+    //statusIndicator->reset();
+    first = true;
 
-    }
-    else if(y == y_max-1)
-    {
-        nb[0] = spaces[(y-1)*x_max+x  ];
-        nb[1] = spaces[(y-1)*x_max+x+1];
-        if(x == x_max-1)
-            nb[2] = dummy;
-        else
-            nb[2] = spaces[(y  )*x_max+x+1];
-        nb[3] = dummy;
-        nb[4] = dummy;
-        nb[5] = dummy;
-        nb[6] = spaces[(y  )*x_max+x-1];
-        nb[7] = spaces[(y-1)*x_max+x-1];
-    }
-    else
-    {
-        nb[0] = spaces[(y-1)*x_max+x  ];
-        nb[1] = spaces[(y-1)*x_max+x+1];
-        nb[2] = spaces[(y  )*x_max+x+1];
-        nb[3] = spaces[(y+1)*x_max+x+1];
-        nb[4] = spaces[(y+1)*x_max+x  ];
-        nb[5] = spaces[(y+1)*x_max+x-1];
-        nb[6] = spaces[(y  )*x_max+x-1];
-        nb[7] = spaces[(y-1)*x_max+x-1];
-    }
-    if(x == 0)
-    {
-        nb[5] = dummy;
-        nb[6] = dummy;
-        nb[7] = dummy;
-    }
-    if(x == x_max-1)
-    {
-        nb[1] = dummy;
-        nb[2] = dummy;
-        nb[3] = dummy;
-    }
-    return nb;
 }
-*/
 

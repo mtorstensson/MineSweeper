@@ -1,10 +1,5 @@
 #include "space.h"
 
-/*
-#include<iostream>
-using namespace std;
-*/
-
 Space::Space(int x_coord, int y_coord)
     :x(x_coord), y(y_coord)
 {
@@ -23,24 +18,40 @@ Space::Space(int x_coord, int y_coord)
 
 void Space::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(is_expanded or !still_playing)
+    if(!still_playing)
         return;
-    if(event->button()  == Qt::LeftButton)
-        if(state == -2)
-            return;
-        else if(mine)
+    if(is_expanded)
+    {
+        if(event->button() == Qt::MiddleButton)
         {
-            was_cause = true;
-            emit kaboom();
-            return;
+            int n=0;
+            for(int i=0; i< 8; i++)
+                if(neibours[i]->is_flag())
+                    n++;
+            if(n == number)
+                for(int i=0; i < 8; i++)
+                    neibours[i]->expand();
         }
-        else
-        {
-            emit clicked(this);
-            expand();
-        }
-    else if(event->button() == Qt::RightButton)
-        mark();
+    }
+    else
+    {
+        if(event->button()  == Qt::LeftButton)
+            if(state == -2)
+                return;
+            else if(mine)
+            {
+                was_cause = true;
+                emit kaboom();
+                return;
+            }
+            else
+            {
+                emit clicked(this);
+                expand();
+            }
+        else if(event->button() == Qt::RightButton)
+            mark();
+    }
 
 }
 
@@ -68,6 +79,14 @@ void Space::is_mine(bool is_it)
 {
     mine = is_it;
     return;
+}
+
+bool Space::is_flag()
+{
+    if(state == -2)
+        return true;
+    else
+        return false;
 }
 
 void Space::expand()
@@ -134,14 +153,16 @@ QRectF Space::boundingRect() const
     return QRectF(0,0,IMG_X,IMG_Y);
 }
 
-void Space::explode()
+void Space::explode(bool victory)
 {
     still_playing = false;
-
-    if(mine)
+    if(!victory)
     {
-        state = -99;
-        update();
+        if(mine && state != -2)
+        {
+            state = -99;
+            update();
+        }
     }
 }
 
