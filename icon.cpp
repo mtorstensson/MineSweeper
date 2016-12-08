@@ -23,9 +23,12 @@ void Icon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->drawPixmap(0,0,IMG_X,IMG_Y,QPixmap(active));
 }
 
-void Icon::gameEnd(bool victory)
+void Icon::gameEnd(bool success)
 {
-    active = victory;
+    if(success)
+        active = victory;
+    else
+        active = stop;
     update();
 }
 

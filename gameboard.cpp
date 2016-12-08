@@ -1,13 +1,13 @@
 #include "gameboard.h"
 
 GameBoard::GameBoard(int x, int y, int n_mines)
-  :x_max(x), y_max(y), mines(n_mines)
+  :QGraphicsScene(), x_max(x), y_max(y), mines(n_mines)
 {
     return;
 }
 
 GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
-  :x_max(x), y_max(y), mines(n_mines)
+  :QGraphicsScene(), x_max(x), y_max(y), mines(n_mines)
 {
     srand(time(NULL));
     first = true;
@@ -44,6 +44,7 @@ GameBoard::GameBoard(int x, int y, int n_mines, int *size_x, int *size_y)
             connect(spaces[x_max*y+x],SIGNAL(expanded()),this,SLOT(checkDone()));
             connect(spaces[x_max*y+x],SIGNAL(flagged(bool)),mineCounter,SLOT(change(bool)));
             connect(this,SIGNAL(gameEnd(bool)),spaces[x_max*y+x],SLOT(explode(bool)));
+            connect(this,SIGNAL(restart()),spaces[x_max*y+x],SLOT(reset()));
             connect(statusIndicator,SIGNAL(clicked()),spaces[x_max*y+x],SLOT(reset()));
             addItem(spaces[x_max*y+x]);
         }
@@ -156,6 +157,7 @@ void GameBoard::move_made(Space *clicked)
 {
     if(first)
     {
+        emit gameStarts();
         // Place mines
         setup(clicked);
         // Start timer
@@ -166,7 +168,7 @@ void GameBoard::move_made(Space *clicked)
         first = false;
     }
     else
-        moves_made++;
+        emit moves(++moves_made);
 }
 
 void GameBoard::checkDone()

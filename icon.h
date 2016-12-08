@@ -18,7 +18,7 @@ public:
                QWidget *widget) Q_DECL_OVERRIDE;
 
 public slots:
-    void gameEnd(bool victory);
+    void gameEnd(bool success);
     void reset();
 
 signals:

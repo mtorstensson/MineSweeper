@@ -7,13 +7,15 @@ SOURCES += main.cpp \
     gameboard.cpp \
     space.cpp \
     counter.cpp \
-    icon.cpp
+    icon.cpp \
+    mainwindow.cpp
 
 HEADERS += \
     gameboard.h \
     space.h \
     counter.h \
-    icon.h
+    icon.h \
+    mainwindow.h
 
 RESOURCES += \
     minesweeper.qrc

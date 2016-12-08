@@ -29,13 +29,15 @@ public slots:
     void reset();
 
 signals:
+    void gameStarts();
     void gameEnd(bool);
     void restart();
+    void moves(int);
 
 private:
     const int IMG_X = 33;
     const int IMG_Y = 33;
-    Space* spaces[100];
+    Space* spaces[480];
     Space* dummy;
     Counter* timeCounter;
     Counter* mineCounter;

@@ -94,6 +94,11 @@ void Space::expand()
     // Expandera,
     if(is_expanded || state == -2)
         return;
+    if(is_mine()){
+        was_cause = true;
+        emit kaboom();
+        return;
+    }
     state = number;
     //	redraw();
     is_expanded = true;
@@ -114,6 +119,9 @@ void Space::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
             img[9] = 'c';
         else
             img[9] = 'm';
+        break;
+    case -90:
+        img[9] = 'n';//"No mine": Om flaggad men tom
         break;
     case -1:
         img[9] = 'u';// Om oklickad
@@ -161,6 +169,11 @@ void Space::explode(bool victory)
         if(mine && state != -2)
         {
             state = -99;
+            update();
+        }
+        else if(!mine && state == -2)
+        {
+            state = -90;
             update();
         }
     }
