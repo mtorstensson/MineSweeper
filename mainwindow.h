@@ -26,18 +26,28 @@ public slots:
     void start();
     void moves(int m);
     void about();
+    void smallBoard();
+    void mediumBoard();
+    void largeBoard();
 
 private:
     void createActions();
     void createMenus();
+    void setup(int x,int y, int mines);
 
 
     GameBoard *board;
+    QGraphicsView *view;
     QMenu *fileMenu;
     QMenu *helpMenu;
+    QMenu *sizeMenu;
+    QActionGroup *boardSize;
     QAction *newAct;
     QAction *exitAct;
     QAction *aboutAct;
+    QAction *smallSize;
+    QAction *mediumSize;
+    QAction *largeSize;
 
 };
 
